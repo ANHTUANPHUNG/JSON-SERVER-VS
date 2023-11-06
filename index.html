@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>List Of Customers</title>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="custom-style.css">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link href="custom-style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar bg-body-tertiary">
+                <div class="container-fluid">
+                    <a class="navbar-brand">List Of Customers</a>
+                    <div class="d-flex" style="gap: 10px;">
+                        <input class="form-control col-lg-3" type="text" id="searchName" placeholder="Tìm theo tên">
+                        <button class="btn btn-outline-light" onclick="searchByName()">Search</button>
+
+                        <a href="transfer.html">
+                            <button class="btn btn-outline-light" type="button">
+                                <i class="fas fa-history"></i>
+                                Transfer Histories
+                            </button>
+                        </a>
+                        <button class="btn btn-outline-light" type="button" id="created">
+                            <i class="far fa-plus-square"></i>
+                            Add New Customer
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="content">
+            <table class="table table-hover" id="tbCustomer">
+                <thead>
+                    <tr>
+                        <th>NO.</th>
+                        <th>FullName</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th id="balance" style="display: flex;">Balance <label for="balance" id="sort-icon"
+                                class="fas fa-caret-up"></label>
+                        </th>
+                        <th colspan="5">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div id="transferModal" class="modal" style="display: none;">
+        <div class="modal-content" style="width: 90%;">
+            <h2>Transfer</h2>
+            <form id="transferForm">
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-3">
+                        <label for="id" class="form-label">Sender Id</label>
+                        <input type="text" class="form-control" id="id" disabled>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="fullName" class="form-label">Sender Name</label>
+                        <input type="text" class="form-control" id="fullName" disabled>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" disabled>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="balance" class="form-label">Sender Balance</label>
+                        <input type="number" disabled class="form-control" id="balance">
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="number" style="display: none;" class="form-control" id="dateTime">
+                    </div>
+                </div>
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-3" id="selectContainer">
+                        <label for="selectFullNameNotId" class="form-label">Recipient Name</label>
+                        <select name="" id="selectFullNameNotId" class="form-control">
+                        </select>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <label for="transferAmount" class="form-label">Transfer Amount($)</label>
+                        <input type="number" class="form-control" id="transferAmount"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="fees" class="form-label">Fees($)</label>
+                        <input type="email" class="form-control" id="fees" disabled>
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="transactionAmount" class="form-label">Total amount of transaction($)</label>
+                        <input type="email" disabled class="form-control" id="transactionAmount">
+                    </div>
+                </div>
+
+                <div class="row pt-3" style="display: flex; justify-content: flex-end; ">
+                    <div class="col-lg-3" style="max-width: 11%;">
+                        <button type="button" class="btn btn-secondary" id="closeModalTransfer">Close</button>
+
+                    </div>
+                    <div class="col-lg-3" style="max-width: 12%;">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="fas fa-exchange-alt"></i>
+                            Transfer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal -->
+    <!-- Modal -->
+
+    <div id="editCustomerModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Edit Customer</h2>
+            <form id="editCustomerForm">
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-6">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="fullName" required>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" required>
+
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" required>
+
+                    </div>
+                </div>
+                <div class="row pt-3" style="display: flex; justify-content: flex-end; ">
+                    <div class="col-lg-3" style="max-width: 11%;">
+                        <button type="button" class="btn btn-secondary" id="closeModalEdit">Close</button>
+
+                    </div>
+                    <div class="col-lg-3" style="max-width: 19%;">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="fas fa-edit"></i>
+                            Edited
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="depositModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Deposit </h2>
+            <form id="depositForm">
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-6">
+                        <label for="id" class="form-label">Customer Id</label>
+                        <input type="text" class="form-control" id="id" disabled>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="email" class="form-control" id="fullName" disabled>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="balance" class="form-label">Current balance($)</label>
+                        <input type="tel" class="form-control" id="balance" disabled>
+
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="transactionAmount" class="form-label">Transaction Amount</label>
+                        <input type="number" class="form-control" id="transactionAmount" required
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" min="10" max="1000000000">
+
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="number" style="display: none;" class="form-control" id="dateTime">
+                    </div>
+                </div>
+                <div class="row pt-3" style="display: flex; justify-content: flex-end; ">
+                    <div class="col-lg-3" style="max-width: 11%;">
+                        <button type="button" class="btn btn-secondary" id="closeModalDeposit">Close</button>
+
+                    </div>
+                    <div class="col-lg-3" style="max-width: 20%;">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="fas fa-plus"></i>
+                            Deposit
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="withdrawModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Withdraw </h2>
+            <form id="withdrawForm">
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-6">
+                        <label for="id" class="form-label">Customer Id</label>
+                        <input type="text" class="form-control" id="id" disabled>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="email" class="form-control" id="fullName" disabled>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="balance" class="form-label">Current balance($)</label>
+                        <input type="tel" class="form-control" id="balance" disabled>
+
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="transactionAmount" class="form-label">Transaction Amount</label>
+                        <input type="number" class="form-control" id="transactionAmount" required
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" min="10" max="1000000000">
+
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="number" style="display: none;" class="form-control" id="dateTime">
+                    </div>
+                </div>
+                <div class="row pt-3" style="display: flex; justify-content: flex-end; ">
+                    <div class="col-lg-3" style="max-width: 11%;">
+                        <button type="button" class="btn btn-secondary" id="closeModalWithdraw">Close</button>
+
+                    </div>
+                    <div class="col-lg-3" style="max-width: 22%;">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="fas fa-minus"></i>
+                            Withdraw
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Customer</h2>
+            <form id="customerForm">
+                <div class="row mb-3 mt-3">
+                    <div class="col-lg-6">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="fullName" required>
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" required>
+
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" required>
+
+                    </div>
+                </div>
+                <div class="row pt-3" style="display: flex; justify-content: flex-end; ">
+                    <div class="col-lg-3" style="max-width: 11%;">
+                        <button type="button" class="btn btn-secondary" id="closeModal">Close</button>
+
+                    </div>
+                    <div class="col-lg-3" style="max-width: 19%;">
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="fas fa-plus"></i>
+                            Create
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+<script src="custom-script.js"></script>
+
+</html>

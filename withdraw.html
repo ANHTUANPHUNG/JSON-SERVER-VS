@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>List Of Customers</title>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="custom-style.css">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link href="custom-style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar bg-body-tertiary">
+                <div class="container-fluid">
+                    <a class="navbar-brand">Withdraw Histories</a>
+                    <div class="d-flex" style="gap: 10px; width: 68%;">
+                        <select name="customerId" class="form-control" id="customerSelect" onchange="searchByName()">
+                            <option value="">Mời chọn</option>
+
+                        </select>
+                        <a href="deposit.html"><button style="width: 180px;" class="btn btn-outline-light"
+                                type="button">
+                                <i class="far fa-plus-square"></i>
+                                Deposit Histories
+                            </button>
+                        </a>
+                        <a href="transfer.html"><button style="width: 180px;" class="btn btn-outline-light"
+                                type="button">
+                                <i class="far fa-plus-square"></i>
+                                Transfer Histories
+                            </button>
+                        </a>
+                        <a href="index.html"><button style="width: 180px;" class="btn btn-outline-light" type="button">
+                                <i class="far fa-plus-square"></i>
+                                List Of Customers
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="content">
+            <table class="table table-hover" id="tbCustomer">
+                <thead>
+                    <tr>
+                        <th>NO.</th>
+                        <th>Full Name</th>
+                        <th>Transaction Time</th>
+                        <th>Before Transaction</th>
+                        <th>Transaction Amount</th>
+                        <th>After Transaction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    const bodyCustomer = document.querySelector("#tbCustomer tbody");
+
+    async function fetchAllTransfer() {
+        const response = await fetch("http://localhost:3300/withdraw");
+        const transfer = await response.json();
+        return transfer;
+    }
+    async function fetchAllPerson() {
+        const response = await (await fetch("http://localhost:3300/persons")).json();
+
+
+        const select = document.getElementById('customerSelect'); // Tạo phần tử select
+
+        response.forEach((item) => {
+            const option = document.createElement('option');
+            option.value = item.fullName;
+            option.text = item.fullName;
+            option.id = item.id
+            select.appendChild(option);
+        });
+
+    }
+    // Lấy phần tử select
+    const selected = document.getElementById('customerSelect');
+
+    selected.addEventListener('click', function () {
+        const selectedCustomerId = selected.value;
+
+    });
+
+    const getAllTransfer = async () => {
+        const transfer = await fetchAllTransfer();
+        console.log(transfer);
+        const select = document.getElementById('customerSelect'); // Tạo phần tử select
+
+
+        transfer.forEach((item) => {
+            const str = renderTransfer(item);
+            bodyCustomer.innerHTML += str;
+        });
+    };
+    let index = 1;
+    const renderTransfer = (obj) => {
+
+        return `
+        <tr>
+            <td>${index++}</td>
+            <td>${obj.fullNameSender}</td>
+            <td>${obj.timeDeposit.replace('T', ' ').split('.')[0]}</td>
+            <td>${Math.round(obj.beforeTransaction * 100) / 100}</td>
+            <td>${obj.transactionAmountNumber}</td>
+            <td>${Math.round(obj.afterTransaction * 100) / 100}</td>
+
+        </tr>
+    `;
+    };
+    getAllTransfer();
+    fetchAllPerson();
+    function searchByName() {
+        const searchSelect = document.getElementById("customerSelect");
+        const rows = document.querySelectorAll("#tbCustomer tbody tr");
+
+        rows.forEach((row) => {
+            const fullName = row.querySelector("td:nth-child(2)").textContent;
+            const recipient = row.querySelector("td:nth-child(3)").textContent;
+            if (fullName.includes(searchSelect.value) || recipient.includes(searchSelect.value)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+</script>
+
+</html>
